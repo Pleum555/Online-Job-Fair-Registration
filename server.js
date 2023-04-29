@@ -4,7 +4,8 @@ const connectDB = require('./config/db');
 const cookieParser = require('cookie-parser');
 
 //Route files
-const auth = require('./routes/auth.js');
+const auth = require('./routes/auth');
+const companies = require('./routes/companies');
 
 //Load env vars
 dotenv.config({path:'./config/config.env'});
@@ -22,6 +23,7 @@ app.use(cookieParser());
 
 //Mount routers
 app.use('/api/Online-Job-Fair/auth', auth);
+app.use('/api/Online-Job-Fair/companies', companies);
 
 const PORT = process.env.PORT || 5000;
 
