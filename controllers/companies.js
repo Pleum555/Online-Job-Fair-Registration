@@ -1,31 +1,31 @@
+const { query } = require('express');
 const Company = require('../models/Company');
 
 //@desc     Get all Companys
-//@route    GET /api/v1/Companys
+//@route    GET /api/Online-Job-Fair/Companys
 //@access   Public
 exports.getCompanies= async (req,res,next)=>{
     let query;
 
     //Copy req.query
     const reqQuery = {...req.query};
-    
+
     //Fields to exclude
-    const removeFields=['select','sort','page','limit'];
+    const removeFields=['select','sort'];
     
     //Loop over remove feilds and delete them from reqQuery
     removeFields.forEach(param=>delete reqQuery[param]);
-    console.log(reqQuery);
 
     //Create query string
     let queryStr=JSON.stringify(reqQuery);
 
     //Create operators ($gt, $gte, etc)
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match=>`$${match}`);
-    
-    //finding resource
-    query=Company.find(JSON.parse(queryStr))//.populate('appointments');
 
-    //Select Fields
+    //finding resource
+    query= Company.find(JSON.parse(queryStr))//.populate('appointments');
+
+    // Select Fields
     if(req.query.select){
         const fields=req.query.select.split(',').join(' ');
         query = query.select(fields);
@@ -38,45 +38,18 @@ exports.getCompanies= async (req,res,next)=>{
         query = query.sort('-createdAt');
     }
 
-    //Pagination
-    // const page = parseInt(req.query.page, 10)|| 1;
-    // const limit = parseInt(req.query.limit, 10)|| 25;
-    // const startIndex = (page-1)*limit;
-    // const endIndex = page*limit;
-
     try{
-        // const total = await Company.countDocuments();
-        // // query = query.skip(startIndex).limit(limit);
-        
-        // //Executing query
-        // const Companys = await query;
-        
-        // //Pagination result
-        // const pagination = {};
+        //Executing query
+        const Companies = await query;
 
-        // if(endIndex<total){
-        //     pagination.next={
-        //         page:page+1,
-        //         limit
-        //     }
-        // }
-
-        // if(startIndex>0){
-        //     pagination.prev={
-        //         page:page-1,
-        //         limit
-        //     }
-        // }
-
-        //res.status(200).json({success:true, count:Companys.length, pagination, data:Companys});
-        res.status(200).json({success:true, data:query});
+        res.status(200).json({success:true, data:Companies});
     }catch(err) {
         res.status(400).json({success:false});
     }
 };
 
 //@desc     Get single Company
-//@route    GET /api/v1/Companys/:id
+//@route    GET /api/Online-Job-Fair/Companys/:id
 //@access   Public   
 // exports.getCompany= async (req,res,next)=>{
 //     try{
@@ -93,48 +66,48 @@ exports.getCompanies= async (req,res,next)=>{
 // };
 
 //@desc Create new Company
-//@route    POST /api/v1/Companys
+//@route    POST /api/Online-Job-Fair/Companys
 //@access   Private
 exports.createCompany= async (req,res,next)=>{
-    const Company = await Company.create(req.body);
+    const company = await Company.create(req.body);
     res.status(201).json({
         success: true, 
-        data: Company
+        data: company
     });
 };
 
 //@desc     Update Company
-//@route    PUT /api/v1/Companys/:id
+//@route    PUT /api/Online-Job-Fair/Companys/:id
 //@access   Private
 exports.updateCompany= async (req,res,next)=>{
     try{
-        const Company = await Company.findByIdAndUpdate(req.params.id, req.body, {
+        const company = await Company.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
         })
 
-        if(!Company){
+        if(!company){
             return res.status(400).json({sucess: false});
         }
 
-        res.status(200).json({success: true, data: Company});
+        res.status(200).json({success: true, data: company});
     }catch(err) {
         res.status(400).json({success: false});
     }
 };
 
 //@desc     Delete Company
-//@route    DELETE /api/v1/Companys/:id
+//@route    DELETE /api/Online-Job-Fair/Companys/:id
 //@access   Private   
 exports.deleteCompany= async (req,res,next)=>{
     try{
-        const Company = await Company.findById(req.params.id);
+        const company = await Company.findById(req.params.id);
 
-        if(!Company) {
+        if(!company) {
             return res.status(404).json({success: false, message: `Bootcamp not found with id of ${req.params.id}`});
         }
 
-        Company.remove();
+        company.remove();
         res.status(200).json({success:true, data: {}});
     }catch(err) {
         res.status(400).json({success: false});

@@ -3,17 +3,17 @@ const { getCompanies, createCompany, updateCompany, deleteCompany } = require('.
 
 
 //Include other resource routers
-//const appointmentRouter = require('./appointments');
+const interviewSessionBookingRouter = require('./interviewSessionBookings');
 
 const router = express.Router();
 
 const {protect, authorize} = require('../middleware/auth');
 
 //Re-route into other resource routers
-//router.use('/:hospitalId/appointments/', appointmentRouter);
+router.use('/:companyId/interviewsessionbookings', interviewSessionBookingRouter);
 
 // router.route('/vacCenters').get(getVacCenters);
-router.route('/').get(protect,authorize('user', 'admin'), getCompanies).post(protect, authorize('admin'), createCompany);
+router.route('/').get(protect, getCompanies).post(protect, authorize('admin'), createCompany);
 router.route('/:id').put(protect, authorize('admin'), updateCompany).delete(protect, authorize('admin'), deleteCompany);
 
 module.exports=router;
