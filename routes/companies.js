@@ -11,8 +11,12 @@ const {protect, authorize} = require('../middleware/auth');
 //Re-route into other resource routers
 router.use('/:companyId/interviewsessionbookings', interviewSessionBookingRouter);
 
-// router.route('/vacCenters').get(getVacCenters);
-router.route('/').get(protect, getCompanies).post(protect, authorize('admin'), createCompany);
-router.route('/:id').get(protect, authorize('admin'), getCompany).put(protect, authorize('admin'), updateCompany).delete(protect, authorize('admin'), deleteCompany);
+router.route('/')
+    .get(protect, authorize('admin', 'user'), getCompanies)
+    .post(protect, authorize('admin'), createCompany);
+router.route('/:id')
+    .get(protect, authorize('admin'), getCompany)
+    .put(protect, authorize('admin'), updateCompany)
+    .delete(protect, authorize('admin'), deleteCompany);
 
 module.exports=router;
