@@ -94,21 +94,16 @@ exports.addBooking=async (req,res,next)=>{
         if(existedInterviewSessionBookings.length >= 3 ){ //&& req.body.role !== 'admin'){
             return res.status(404).json({success:false, message:`The user with ID ${req.user.id} has already made 3 interviewSessionBookings`})
         }
-        const scopedate = [10,11,12,13];
-        const scopemonth = [4]; // May is 4
-        const scopeyear = [2022];
 
         const bookupDate = new Date(req.body.bookupDate);
-        const date = bookupDate.getDate()
-        const month = bookupDate.getMonth();
-        const year = bookupDate.getFullYear();
-        if(!scopedate.includes(date)||!scopemonth.includes(month)||!scopeyear.includes(year)){
+        
+        if(bookupDate<Date.parse("May 10, 2022") || bookupDate>Date.parse("May 13, 2022")){
             return res.status(404).json({success:false, message:`Unable to register on ${bookupDate.toDateString()}.`})
         }
 
         const checkexistBooking = await InterviewSessionBooking.findOne({
             user: req.body.user,
-            bookupDate: req.body.bookupDate
+            bookupDate: bookupDate
         });
         if(checkexistBooking){
             return res.status(404).json({success:false, message:`The user with ID ${req.user.id} has already booked on ${bookupDate.toDateString()} interview session.`})
