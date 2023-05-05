@@ -1,6 +1,5 @@
 const express = require('express');
-const { getCompanies, createCompany, updateCompany, deleteCompany } = require('../controllers/companies');
-
+const { getCompanies, getCompany, createCompany, updateCompany, deleteCompany} = require('../controllers/companies');
 
 //Include other resource routers
 const interviewSessionBookingRouter = require('./interviewSessionBookings');
@@ -14,6 +13,6 @@ router.use('/:companyId/interviewsessionbookings', interviewSessionBookingRouter
 
 // router.route('/vacCenters').get(getVacCenters);
 router.route('/').get(protect, getCompanies).post(protect, authorize('admin'), createCompany);
-router.route('/:id').put(protect, authorize('admin'), updateCompany).delete(protect, authorize('admin'), deleteCompany);
+router.route('/:id').get(protect, authorize('admin'), getCompany).put(protect, authorize('admin'), updateCompany).delete(protect, authorize('admin'), deleteCompany);
 
 module.exports=router;

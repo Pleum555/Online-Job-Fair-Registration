@@ -106,7 +106,7 @@ exports.addBooking=async (req,res,next)=>{
             return res.status(404).json({success:false, message:`Unable to register on ${bookupDate.toDateString()}.`})
         }
 
-        const checkexistBooking = await InterviewSessionBooking.find({
+        const checkexistBooking = await InterviewSessionBooking.findOne({
             user: req.body.user,
             bookupDate: req.body.bookupDate
         });

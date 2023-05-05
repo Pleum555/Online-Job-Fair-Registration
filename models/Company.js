@@ -23,45 +23,26 @@ const CompanySchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please add a telephone number']
     },
-
-    // district:{
-    //     type: String,
-    //     require: [true, 'Please add a district']
-    // },
-    // province:{
-    //     type: String,
-    //     require: [true, 'Please add a province']
-    // },
-    // postalcode:{
-    //     type: String,
-    //     require: [true, 'Please add a postalcode'],
-    //     maxlength: [5, 'Postal Code can not be than 5 digits']
-    // },
-    
-    // region:{
-    //     type: String,
-    //     require: [true, 'Please add a region'],
-    // }
 }
-// ,{
-//     toJSON: {virtuals:true},
-//     toObject: {virtuals:true}
-// }
+,{
+    toJSON: {virtuals:true},
+    toObject: {virtuals:true}
+}
 );
 
-//Cascade delete appointments when a hospital is deleted
-// HospitalSchema.pre('remove',async function(next){
-//     console.log(`Appointments being removed from hospital ${this._id}`);
-//     await this.model('Appointment').deleteMany({hospital: this._id});
-//     next();
-// });
+//Cascade delete InterviewSessionBooking when a hospital is deleted
+CompanySchema.pre('remove',async function(next){
+    console.log(`InterviewSessionBooking being removed from hospital ${this._id}`);
+    await this.model('InterviewSessionBooking').deleteMany({hospital: this._id});
+    next();
+});
 
 //Reverse populate with virtuals
-// HospitalSchema.virtual('appointments',{
-//     ref: 'Appointment',
-//     localField: '_id',
-//     foreignField: 'hospital',
-//     justOne:false
-// });
+CompanySchema.virtual('interviewsessionbookings',{
+    ref: 'InterviewSessionBooking',
+    localField: '_id',
+    foreignField: 'company',
+    justOne:false
+});
 
 module.exports = mongoose.model('Company', CompanySchema);
