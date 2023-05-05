@@ -81,7 +81,7 @@ exports.addBooking=async (req,res,next)=>{
 
         const company = await Company.findById(req.params.companyId);
         if(!company){
-            return res.status(404).json({success:false, message:`No hospital with the id of ${req.params.interviewSessionBookingId}`});
+            return res.status(404).json({success:false, message:`No InterviewSessionBooking with the id of ${req.params.interviewSessionBookingId}`});
         }
 
         //add user Id to req.body
@@ -92,8 +92,28 @@ exports.addBooking=async (req,res,next)=>{
 
         //If the user is not an admin, they can only create 3 InterviewSessionBookings.
         if(existedInterviewSessionBookings.length >= 3 ){ //&& req.body.role !== 'admin'){
-            return res.status(400).json({success:false, message:`The user with ID ${req.user.id} has already made 3 interviewSessionBookings`})
+            return res.status(404).json({success:false, message:`The user with ID ${req.user.id} has already made 3 interviewSessionBookings`})
         }
+        const scopedate = [10,11,12,13];
+        const scopemonth = [4]; // May is 4
+        const scopeyear = [2022];
+
+        const bookupDate = new Date(req.body.bookupDate);
+        const date = bookupDate.getDate()
+        const month = bookupDate.getMonth();
+        const year = bookupDate.getFullYear();
+        if(!scopedate.includes(date)||!scopemonth.includes(month)||!scopeyear.includes(year)){
+            return res.status(404).json({success:false, message:`Unable to register on ${bookupDate.toDateString()}.`})
+        }
+
+        const checkexistBooking = await InterviewSessionBooking.find({
+            user: req.body.user,
+            bookupDate: req.body.bookupDate
+        });
+        if(checkexistBooking){
+            return res.status(404).json({success:false, message:`The user with ID ${req.user.id} has already booked on ${bookupDate.toDateString()} interview session.`})
+        }
+
         const interviewSessionBooking = await InterviewSessionBooking.create(req.body);
         
         res.status(200).json({
